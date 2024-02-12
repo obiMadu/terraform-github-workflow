@@ -2,14 +2,14 @@ variable "do_token" {
   type = string
 }
 
-variable "namecheap_user" {
+variable "do_region" {
   type = string
 }
 
-variable "namecheap_api_user" {
+variable "cloudflare_api_token" {
   type = string
 }
 
-variable "namecheap_api_key" {
+variable "cloudflare_zone_id" {
   type = string
 }
