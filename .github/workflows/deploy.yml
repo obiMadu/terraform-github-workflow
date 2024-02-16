@@ -4,6 +4,9 @@ on:
     push:
         branches: [nil]
 
+env:
+    GOOGLE_APPLICATION_CREDENTIALS: ${{ vars.GOOGLE_APPLICATION_CREDENTIALS }}
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
