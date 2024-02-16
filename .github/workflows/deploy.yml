@@ -2,7 +2,7 @@ name: Deploy
 
 on:
     push:
-        branches: [nil]
+        branches: [main]
 
 env:
     GOOGLE_APPLICATION_CREDENTIALS: ${{ vars.GOOGLE_APPLICATION_CREDENTIALS }}
@@ -31,5 +31,8 @@ jobs:
       - name: Terraform Apply
         id: apply
         env:
-          TF_VAR_do_token: ${{ secrets.DO_TOKEN }}
+          TF_VAR_do_token: ${{ secrets.do_token }}
+          TF_VAR_do_region: ${{ secrets.do_region }}
+          TF_VAR_cloudflare_api_token: ${{ secrets.cloudflare_api_token }}
+          TF_VAR_cloudflare_zone_id: ${{ secrets.cloudflare_zone_id }}
         run: terraform apply -auto-approve
