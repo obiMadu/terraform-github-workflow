@@ -1,0 +1,51 @@
+name: Plan
+
+on:
+    pull_request: 
+        branches: [main]
+
+env:
+  GOOGLE_APPLICATION_CREDENTIALS: ${{ vars.GOOGLE_APPLICATION_CREDENTIALS }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions: 
+      pull-requests: write
+      
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true  # Fetch submodules (true OR recursive)
+          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: true
+
+      - name: Setup Backend Credentials
+        id: backend
+        run: echo '${{ secrets.GCS_KEY }}' > ${{ vars.GOOGLE_APPLICATION_CREDENTIALS }}
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+        continue-on-error: true
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+        
+      - name: Terraform Plan
+        id: plan
+        env:
+            TF_VAR_do_token: ${{ secrets.do_token }}
+            TF_VAR_do_region: ${{ secrets.do_region }}
+            TF_VAR_cloudflare_api_token: ${{ secrets.cloudflare_api_token }}
+            TF_VAR_cloudflare_zone_id: ${{ secrets.cloudflare_zone_id }}
+        run: terraform plan -no-color
