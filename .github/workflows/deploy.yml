@@ -1,0 +1,32 @@
+name: Deploy
+
+on:
+    push:
+        branches: [nil]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+      
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true  # Fetch submodules (true OR recursive)
+          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Setup Backend Credentials
+        id: backend
+        run: echo '${{ secrets.GCS_KEY }}' > ${{ vars.GOOGLE_APPLICATION_CREDENTIALS }}
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        
+      - name: Terraform Apply
+        id: apply
+        env:
+          TF_VAR_do_token: ${{ secrets.DO_TOKEN }}
+        run: terraform apply -auto-approve
